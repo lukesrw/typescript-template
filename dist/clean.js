@@ -1,6 +1,6 @@
 try {
     // eslint-disable-next-line
-    require("fs").rmdirSync(__dirname + "/src", {
+    require("fs").rmdirSync(require("path").join(__dirname, "src"), {
         recursive: true
     });
 } catch (e) {}
