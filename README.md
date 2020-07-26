@@ -13,6 +13,7 @@
 | npm-publish.yml | [GitHub Action](https://github.com/features/actions): NPM & GitHub publish on release            |
 | clean.ts        | Utility to selectively clean /dist/src/                                                          |
 | /lib/           | Helpers often used in my projects                                                                |
+| /interfaces/    | Interfaces often used in my projects                                                             |
 
 ---
 
