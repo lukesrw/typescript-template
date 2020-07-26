@@ -2,5 +2,7 @@ node_modules
 .github
 tsconfig.*
 /src
-/dist/clean.js
+/dist/src/clean*
 /dist/src/test
+*.tgz
+.eslintrc.json
