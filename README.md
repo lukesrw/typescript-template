@@ -11,7 +11,8 @@
 | tsconfig.json   | [TypeScript](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) configuration      |
 | node.js.yml     | [GitHub Action](https://github.com/features/actions): test on commit/pull request                |
 | npm-publish.yml | [GitHub Action](https://github.com/features/actions): NPM & GitHub publish on release            |
-| clean.js        | Utility to clean /dist/src/                                                                      |
+| clean.ts        | Utility to selectively clean /dist/src/                                                          |
+| /lib/           | Helpers often used in my projects                                                                |
 
 ---
 
@@ -32,7 +33,7 @@ TypeScript configuration establishes the directory structure and compile rules.
 -   Source code is taken from /src/ file
 -   Compiled code is written to /dist/src/
 
-...because TypeScript does not clean up older compiled files, clean.js is used (see below).
+...because TypeScript does not clean up older compiled files, clean.ts is used (see below).
 
 The current TypeScript configuration will produce:
 
@@ -51,6 +52,8 @@ Git ignore controls which files are sent to Bitbucket/GitHub,
 
 Should include only the minimum number of files needed to reproduce development and testing.
 
+**Note:** There is not a blanket ignore on /dist/src, the "git" script must be used.
+
 ### NPM
 
 NPM ignore controls which files are sent to NPM,
@@ -67,9 +70,14 @@ Establishes "main" as "./dist/src/index" instead of "main.js".
 
 Sets up three scripts:
 
--   clean - see clean.js
+-   clean - compiles TypeScript, then see clean.ts
 -   build - runs "clean", then compiles TypeScript
 -   test - runs "build", then runs mocha tests
+-   git - runs "test", then runs "clean"
+
+Before require/importing in another script, "build" must have been run.
+
+Before committing to the Git repository, "git" must have been run.
 
 Using npm init will update this with other NPM properties.
 
@@ -87,10 +95,10 @@ If a release is made through the GitHub repository, the package is published to 
 
 ---
 
-## clean.js
+## clean.ts
 
-If you make an "example.ts" file and compile it, an "example.js" file is produced, if you later decide you don't need "example.ts" and delete it - the "example.js" file remains in the repository.
+If you make an "example.ts" file and compile it, an "example.js" file is produced, if you later decide you don't need "example.ts" and delete it - the "example.js" file (and .js.map, .d.ts, .d.ts.map files) remains in the repository.
 
 This usually isn't a massive deal, perhaps some wasted size on the NPM package until you notice and delete it, but if you're using functions that read directories (even if these functions aren't in your code - they are in Mocha) then these zombie files could cause problems.
 
-clean.js recursively deletes everything inside of /dist/src/ - either on request, or when tests are run - this ensures a clean working directory. Persistant Node.js files can be used if they are stored inside of /dist/ but not inside /src/
+clean.ts recursively selectively deletes everything inside of /dist/src/ that looks like a compiled JS file - either on request, or when tests are run - this ensures a clean working directory.
