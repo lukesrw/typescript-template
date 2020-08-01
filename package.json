@@ -3,7 +3,7 @@
     "scripts": {
         "clean": "tsc && node dist/src/clean",
         "build": "npm run clean && tsc",
-        "test": "npm run build && mocha dist/src/test",
+        "test": "npm run build && mocha dist/src/test --reporter min",
         "git": "npm run test && npm run clean"
     },
     "devDependencies": {
