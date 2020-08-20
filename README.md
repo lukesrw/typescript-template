@@ -11,7 +11,8 @@
 | tsconfig.json   | [TypeScript](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) configuration      |
 | node.js.yml     | [GitHub Action](https://github.com/features/actions): test on commit/pull request                |
 | npm-publish.yml | [GitHub Action](https://github.com/features/actions): NPM & GitHub publish on release            |
-| clean.ts        | Utility to selectively clean /dist/src/                                                          |
+| clean.js        | Utility to selectively clean /dist/src/                                                          |
+| watch.js        | Utility to watch for file changes and trigger actions                                            |
 | /lib/           | Helpers often used in my projects                                                                |
 | /interfaces/    | Interfaces often used in my projects                                                             |
 
@@ -34,7 +35,7 @@ TypeScript configuration establishes the directory structure and compile rules.
 -   Source code is taken from /src/ file
 -   Compiled code is written to /dist/src/
 
-...because TypeScript does not clean up older compiled files, clean.ts is used (see below).
+...because TypeScript does not clean up older compiled files, clean.js is used (see below).
 
 The current TypeScript configuration will produce:
 
@@ -71,7 +72,7 @@ Establishes "main" as "./dist/src/index" instead of "main.js".
 
 Sets up three scripts:
 
--   clean - compiles TypeScript, then see clean.ts
+-   clean - compiles TypeScript, then see clean.js
 -   build - runs "clean", then compiles TypeScript
 -   test - runs "build", then runs mocha tests
 -   git - runs "test", then runs "clean"
@@ -96,10 +97,34 @@ If a release is made through the GitHub repository, the package is published to 
 
 ---
 
-## clean.ts
+## clean.js
 
 If you make an "example.ts" file and compile it, an "example.js" file is produced, if you later decide you don't need "example.ts" and delete it - the "example.js" file (and .js.map, .d.ts, .d.ts.map files) remains in the repository.
 
 This usually isn't a massive deal, perhaps some wasted size on the NPM package until you notice and delete it, but if you're using functions that read directories (even if these functions aren't in your code - they are in Mocha) then these zombie files could cause problems.
 
-clean.ts recursively selectively deletes everything inside of /dist/src/ that looks like a compiled JS file - either on request, or when tests are run - this ensures a clean working directory.
+clean.js recursively searches a given directory and deletes any files that look like compiled files, given a set of rules for .TS files and .SCSS files.
+
+---
+
+## watch.js
+
+I've tried numerous watchers and I didn't like them too much, so I wrote a simple little watcher for myself. It is given a set of inputs, in the form of a JavaScript array, that tells it what to watch for - and what to trigger.
+
+For example,
+
+```js
+let events = {
+    "change .md$": "remark -o",
+    "change .scss$": "sass dist/src/public/css",
+    "change ^src.+.ts$": "tsc"
+};
+```
+
+The above events look for:
+
+-   when a file ending in ".md" is changed, remark is run
+-   when a file ending in ".scss" is changed, sass is recompiled in a specific directory
+-   when a file inside "src" and ending in ".ts" is changed, TypeScript is compiled
+
+Implementing my watcher this way, instead of a pre-existing software, NPM package, IDE plugin, etc. allows me to be independant of the restrictions of those software. These don't have any dependencies and can be easily expanded to run any command prompt/terminal command.
