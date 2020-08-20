@@ -1,10 +1,11 @@
 {
     "main": "./dist/src/index",
     "scripts": {
-        "clean": "tsc && node dist/src/clean",
-        "build": "npm run clean && tsc",
-        "test": "npm run build && mocha dist/src/test --reporter min",
-        "git": "npm run test && npm run clean"
+        "watch-end": "node clean",
+        "build": "npm run watch-end && tsc",
+        "watch-start": "npm run build",
+        "watch-after-start": "node dist/src/index",
+        "test": "npm run build && mocha dist/src/test --reporter min"
     },
     "devDependencies": {
         "@types/chai": "^4.2.12",
