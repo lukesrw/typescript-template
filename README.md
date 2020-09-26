@@ -1,4 +1,4 @@
-# Template Repository
+# TypeScript Template Repository
 
 ## Contents
 
