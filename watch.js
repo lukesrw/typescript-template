@@ -16,9 +16,9 @@ exec(`chdir /D ${__dirname} && npm run watch-start --if-present`, (error, stdout
 
     console.log(`Watching ${TARGET} @ ${new Date()}`);
 
-    exec(`chdir /D ${__dirname} && npm run watch-after-start --if-present`).stdout.on("data", chunk => {
-        console.log(chunk.trim());
-    });
+    let exec_result = exec(`chdir /D ${__dirname} && npm run watch-after-start --if-present`);
+    exec_result.stdout.on("data", chunk => console.log(chunk.trim()));
+    exec_result.stderr.on("data", chunk => console.log(chunk.trim()));
 
     watch(
         TARGET,
