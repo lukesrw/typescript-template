@@ -5,8 +5,8 @@ const TARGET = __dirname;
 
 let queue = {};
 let events = {
-    "change .scss$": "sass dist/src/public/css",
-    "change ^src.+.ts$": "tsc"
+    "change .scss$": "npm run build-sass",
+    "change ^src.+.ts$": "npm run build-ts"
 };
 
 exec(`chdir /D ${__dirname} && npm run watch-start --if-present`, (error, stdout, stderr) => {
