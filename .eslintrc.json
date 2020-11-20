@@ -445,7 +445,7 @@
             }
         },
         {
-            "files": ["**/lib/src/*.js", "**/lib/src/**/*.js", "**/dist/src/*.js", "**/dist/src/**/*.js"],
+            "files": ["**/lib/src/*.js", "**/lib/src/**/*.js", "**/dist/*.js", "**/dist/**/*.js"],
             "rules": {
                 "require-jsdoc": 0,
                 "no-multi-assign": 0,

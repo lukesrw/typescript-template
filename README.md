@@ -11,7 +11,7 @@
 | tsconfig.json   | [TypeScript](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) configuration      |
 | node.js.yml     | [GitHub Action](https://github.com/features/actions): test on commit/pull request                |
 | npm-publish.yml | [GitHub Action](https://github.com/features/actions): NPM & GitHub publish on release            |
-| clean.js        | Utility to selectively clean /dist/src/                                                          |
+| clean.js        | Utility to selectively clean /dist/                                                              |
 | watch.js        | Utility to watch for file changes and trigger actions                                            |
 | /lib/           | Helpers often used in my projects                                                                |
 | /interfaces/    | Interfaces often used in my projects                                                             |
@@ -25,7 +25,7 @@
 ESLint configuration is used to maintain code quality, readability, and uniformity - across browser-based JavaScript, Node.js, and TypeScript.
 
 -   Main rule set for Node.js files, though these rules are also used for TypeScript - where there is generally a high level of parity.
--   Second rule set for compiled Node.js files (matching: "\*\*/lib/src/\*.js", "\*\*/lib/src/\*\*/\*.js", "\*\*/dist/src/\*.js", "\*\*/dist/src/\*\*/\*.js")
+-   Second rule set for compiled Node.js files (matching: "\*\*/lib/src/\*.js", "\*\*/lib/src/\*\*/\*.js", "\*\*/dist/\*.js", "\*\*/dist/\*\*/\*.js")
 -   Third rule set for other JavaScript files (matching: service.js, "\*\*/js/\*.js", "\*\*/js/\*\*/\*.js")
 
 ### TypeScript
@@ -33,7 +33,7 @@ ESLint configuration is used to maintain code quality, readability, and uniformi
 TypeScript configuration establishes the directory structure and compile rules.
 
 -   Source code is taken from /src/ file
--   Compiled code is written to /dist/src/
+-   Compiled code is written to /dist/
 
 ...because TypeScript does not clean up older compiled files, clean.js is used (see below).
 
@@ -54,7 +54,7 @@ Git ignore controls which files are sent to Bitbucket/GitHub,
 
 Should include only the minimum number of files needed to reproduce development and testing.
 
-**Note:** There is not a blanket ignore on /dist/src, the "git" script must be used.
+**Note:** There is not a blanket ignore on /dist/, the "git" script must be used.
 
 ### NPM
 
@@ -68,7 +68,7 @@ Tests are ignored, as end-users don't need these - contributors can get them fro
 
 ## package.json
 
-Establishes "main" as "./dist/src/index" instead of "main.js".
+Establishes "main" as "./dist/index" instead of "main.js".
 
 Sets up three scripts:
 
@@ -116,7 +116,7 @@ For example,
 ```js
 let events = {
     "change .md$": "remark -o",
-    "change .scss$": "sass dist/src/public/css",
+    "change .scss$": "sass dist/public/css",
     "change ^src.+.ts$": "tsc"
 };
 ```
