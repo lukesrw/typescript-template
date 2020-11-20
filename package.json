@@ -1,17 +1,26 @@
 {
-    "main": "./dist/src/index",
+    "main": "./dist/index",
     "scripts": {
         "watch-end": "node clean",
-        "build": "npm run watch-end && tsc",
-        "watch-start": "npm run build",
-        "watch-after-start": "node dist/src/index",
-        "test": "npm run build && mocha dist/src/test --reporter min"
+        "build-ts": "tsc",
+        "build-sass": "sass ./src/public/css:./dist/public/css",
+        "build-tailwind": "tailwindcss-cli build ./dist/public/css/style.css -o ./dist/public/css/style.css",
+        "build": "npm install && npm run watch-end && npm ci & cross-env NODE_ENV=production && npm run build-ts && npm run build-sass && npm run build-tailwind",
+        "watch-start": "npm run build && cross-env NODE_ENV=development && npm run build-tailwind",
+        "watch-after-start": "node dist/index",
+        "test": "npm run build && mocha dist/test --reporter min"
     },
     "devDependencies": {
         "@types/chai": "^4.2.12",
         "@types/mocha": "^8.0.1",
         "@types/node": "^14.6.2",
+        "autoprefixer": "^10.0.2",
         "chai": "^4.2.0",
-        "mocha": "^8.1.3"
-    }
+        "cross-env": "^7.0.2",
+        "mocha": "^8.1.3",
+        "postcss": "^8.1.8",
+        "sass": "^1.29.0",
+        "tailwindcss-cli": "^0.1.2"
+    },
+    "dependencies": {}
 }
