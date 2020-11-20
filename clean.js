@@ -4,9 +4,10 @@ const path = require("path");
 /**
  * @param {string} file name
  * @param {Array} files in directory
+ * @param {Array} always_delete files list
  * @returns {boolean} is compiled or not
  */
-function isCompiledFile(file, files) {
+function isCompiledFile(file, files, always_delete) {
     let file_no_suffix = file.substring(0, file.lastIndexOf("."));
     let file_no_suffix_again = file_no_suffix.substring(0, file_no_suffix.lastIndexOf("."));
 
@@ -14,6 +15,7 @@ function isCompiledFile(file, files) {
      * TypeScript filter
      */
     if (
+        always_delete.includes(file.toLowerCase()) ||
         file.endsWith(".d.ts") ||
         file.endsWith(".d.ts.map") ||
         file.endsWith(".js.map") ||
@@ -38,9 +40,10 @@ function isCompiledFile(file, files) {
 
 /**
  * @param {Array} source to target
+ * @param {Array} always_delete files list
  * @returns {void}
  */
-async function clean(source = []) {
+async function clean(source = [], always_delete) {
     try {
         let clean_items = await fs.promises.readdir(path.join(...source));
         let clean_items_unlinked = 0;
@@ -49,11 +52,11 @@ async function clean(source = []) {
             let clean_item_path = path.join(...source.concat(clean_items[index]));
             let clean_item_stats = await fs.promises.stat(clean_item_path);
             if (clean_item_stats.isDirectory()) {
-                if (await clean(source.concat(clean_items[index]))) {
+                if (await clean(source.concat(clean_items[index]), always_delete)) {
                     clean_items_unlinked += 1;
                 }
             }
-            if (clean_item_stats.isFile() && isCompiledFile(clean_items[index], clean_items)) {
+            if (clean_item_stats.isFile() && isCompiledFile(clean_items[index], clean_items, always_delete)) {
                 await fs.promises.unlink(clean_item_path);
                 clean_items_unlinked += 1;
             }
@@ -69,4 +72,4 @@ async function clean(source = []) {
     return false;
 }
 
-clean([__dirname, "dist"]);
+clean([__dirname, "dist"], process.argv.slice(2));
