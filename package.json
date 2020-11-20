@@ -1,7 +1,7 @@
 {
     "main": "./dist/index",
     "scripts": {
-        "watch-end": "node clean",
+        "watch-end": "node clean style.css style.css.map",
         "build-ts": "tsc",
         "build-sass": "sass ./src/public/css:./dist/public/css",
         "build-tailwind": "tailwindcss-cli build ./dist/public/css/style.css -o ./dist/public/css/style.css",
