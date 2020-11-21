@@ -2,19 +2,30 @@
 
 ## Contents
 
-| Name            | Purpose                                                                                          |
-| --------------- | ------------------------------------------------------------------------------------------------ |
-| .eslintrc.json  | [ESLint](eslint.org/) configuration                                                              |
-| .gitignore      | [Git ignore](https://git-scm.com/docs/gitignore)                                                 |
-| .npmignore      | [NPM ignore](https://docs.npmjs.com/using-npm/developers.html#keeping-files-out-of-your-package) |
-| package.json    | [NPM package](https://docs.npmjs.com/files/package.json)                                         |
-| tsconfig.json   | [TypeScript](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) configuration      |
-| node.js.yml     | [GitHub Action](https://github.com/features/actions): test on commit/pull request                |
-| npm-publish.yml | [GitHub Action](https://github.com/features/actions): NPM & GitHub publish on release            |
-| clean.js        | Utility to selectively clean /dist/                                                              |
-| watch.js        | Utility to watch for file changes and trigger actions                                            |
-| /lib/           | Helpers often used in my projects                                                                |
-| /interfaces/    | Interfaces often used in my projects                                                             |
+| Name                        | Purpose                                                                                                   |
+| --------------------------- | --------------------------------------------------------------------------------------------------------- |
+| ./github/node.js.yml        | [GitHub Action](https://github.com/features/actions): test on commit/pull request                         |
+| ./github/npm-publish.yml    | [GitHub Action](https://github.com/features/actions): NPM & GitHub publish on release                     |
+| ./vscode/settings.json      | VSCode settings file to disable SCSS validation & CSS customData for [Tailwind](https://tailwindcss.com/) |
+| ./vscode/tailwind.json      | CSS customData for adding support for on-hover [Tailwind](https://tailwindcss.com/) documentation         |
+| ./src/interfaces/generic.ts | Generic data interface used in many of my TypeScript projects                                             |
+| ./src/lib/array.ts          | TypeScript Implementation of forEach that allows for async/await support                                  |
+| ./src/public/css/style.scss | Basic [Tailwind](https://tailwindcss.com/) SCSS template file                                             |
+| ./src/test/index.ts         | Empty TypeScript test file (for use with `npm test`)                                                      |
+| ./src/index.ts              | Empty TypeScript project file                                                                             |
+| .eslintrc.json              | [ESLint](eslint.org/) configuration                                                                       |
+| .eslintignore               | [ESLint](eslint.org/) ignore file                                                                         |
+| .gitignore                  | [Git ignore](https://git-scm.com/docs/gitignore)                                                          |
+| .npmignore                  | [NPM ignore](https://docs.npmjs.com/using-npm/developers.html#keeping-files-out-of-your-package)          |
+| .prettierrc                 | [Prettier](https://prettier.io/) configuration                                                            |
+| clean.js                    | Utility to selectively clean /dist/                                                                       |
+| LICENSE                     | Standard GPL-3.0 License                                                                                  |
+| package.json                | [NPM package](https://docs.npmjs.com/files/package.json)                                                  |
+| postcss.config.js           | [PostCSS](https://postcss.org/) configuration                                                             |
+| README.md                   | (this file)                                                                                               |
+| tailwind.config.js          | [Tailwind](https://tailwindcss.com/) configuration                                                        |
+| tsconfig.json               | [TypeScript](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) configuration               |
+| watch.js                    | Utility to watch for file changes and trigger actions                                                     |
 
 ---
 
@@ -72,16 +83,22 @@ Establishes "main" as "./dist/index" instead of "main.js".
 
 Sets up three scripts:
 
--   clean - compiles TypeScript, then see clean.js
--   build - runs "clean", then compiles TypeScript
--   test - runs "build", then runs mocha tests
--   git - runs "test", then runs "clean"
+-   watch-end: runs when development "watch" ends
+-   build-ts: compiles TypeScript
+-   build-sass: compiles Sass
+-   build-tailwind: compiles Tailwind
+-   build: executes `npm install`, runs "watch-end", executes `npm ci`, sets the environment to production, runs "build-ts", "build-sass", and "build-tailwind"
+-   watch-start: runs "build", sets the environment to development, runs "build-tailwind"
+-   watch-after-start: runs the main TypeScript dist/index file
+-   test: runs "build", then runs mocha tests (minimum reporting)
 
-Before require/importing in another script, "build" must have been run.
+For development, run "node watch" - this will start the development/auto-compile process.  
+Terminating this script will clean the source code, removing any files that should not be committed.
 
-Before committing to the Git repository, "git" must have been run.
+Before require/importing in another script, "build" must have been run.  
+Before committing to the Git repository, "watch-end" must have been run.
 
-Using npm init will update this with other NPM properties.
+Using npm init will update this with other NPM properties (for package creation)
 
 ---
 
@@ -94,6 +111,8 @@ If a commit/pull request is made onto the "master" branch, the "test" script is 
 ### npm-publish.yml
 
 If a release is made through the GitHub repository, the package is published to both NPM and GitHub packages. Requires the NPM_TOKEN secret to be setup in the repository.
+
+**Note:** this may have stopped working, only publishing to NPM now
 
 ---
 
