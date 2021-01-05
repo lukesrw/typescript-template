@@ -1,75 +1,56 @@
 const fs = require("fs");
 const path = require("path");
 
+let ignored;
+
 /**
  * @param {string} file name
  * @param {Array} files in directory
- * @param {Array} always_delete files list
  * @returns {boolean} is compiled or not
  */
-function isCompiledFile(file, files, always_delete) {
-    let file_no_suffix = file.substring(0, file.lastIndexOf("."));
-    let file_no_suffix_again = file_no_suffix.substring(0, file_no_suffix.lastIndexOf("."));
+function isCompiledFile(file, files) {
+    let file_sub1 = file.substr(0, file.lastIndexOf("."));
+    let file_sub2 = file.substr(0, file_sub1.lastIndexOf("."));
+    let file_sub3 = file.substr(0, file_sub2.lastIndexOf("."));
 
-    /**
-     * TypeScript filter
-     */
-    if (
-        always_delete.includes(file.toLowerCase()) ||
-        file.endsWith(".d.ts") ||
-        file.endsWith(".d.ts.map") ||
-        file.endsWith(".js.map") ||
-        (file.endsWith(".js") &&
-            files.includes(`${file}.map`) &&
-            files.includes(`${file_no_suffix}.d.ts`) &&
-            files.includes(`${file_no_suffix}.d.ts.map`))
-    ) {
-        return true;
-    }
-
-    /**
-     * SCSS filter
-     */
     return (
-        (file.endsWith(".css") &&
-            (files.includes(`${file_no_suffix}.scss`) || files.includes(`_${file_no_suffix}.scss`))) ||
-        (file.endsWith(".css.map") &&
-            (files.includes(`${file_no_suffix_again}.scss`) || files.includes(`_${file_no_suffix_again}.scss`)))
+        (file.endsWith(".d.ts.map") && files.includes(`${file_sub3}.ts`)) ||
+        (file.endsWith(".d.ts") && files.includes(`${file_sub2}.ts`)) ||
+        (file.endsWith(".js.map") && files.includes(`${file_sub2}.ts`)) ||
+        (file.endsWith(".js") && files.includes(`${file_sub1}.ts`)) ||
+        (file.endsWith(".css.map") && files.includes(`${file_sub2}.scss`)) ||
+        (file.endsWith(".css") && files.includes(`${file_sub1}.scss`))
     );
 }
 
 /**
  * @param {Array} source to target
- * @param {Array} always_delete files list
  * @returns {void}
  */
-async function clean(source = [], always_delete) {
-    try {
-        let clean_items = await fs.promises.readdir(path.join(...source));
-        let clean_items_unlinked = 0;
+async function clean(source = []) {
+    let items = await fs.promises.readdir(path.join(...source));
 
-        for (let index = 0; index < clean_items.length; index += 1) {
-            let clean_item_path = path.join(...source.concat(clean_items[index]));
-            let clean_item_stats = await fs.promises.stat(clean_item_path);
-            if (clean_item_stats.isDirectory()) {
-                if (await clean(source.concat(clean_items[index]), always_delete)) {
-                    clean_items_unlinked += 1;
-                }
-            }
-            if (clean_item_stats.isFile() && isCompiledFile(clean_items[index], clean_items, always_delete)) {
-                await fs.promises.unlink(clean_item_path);
-                clean_items_unlinked += 1;
-            }
+    if (typeof ignored === "undefined") {
+        try {
+            // eslint-disable-next-line require-atomic-updates
+            ignored = await fs.promises.readFile(path.join(...source, ".gitignore"), "utf-8");
+
+            ignored = ignored.split("\n").map(ignore => ignore.trim());
+        } catch (_1) {
+            ignored = [];
         }
+    }
 
-        if (clean_items_unlinked === clean_items.length) {
-            await fs.promises.rmdir(path.join(...source));
-
-            return true;
+    for (let index = 0; index < items.length; index += 1) {
+        let item_path = path.join(...source.concat(items[index]));
+        let item_stats = await fs.promises.stat(item_path);
+        if (item_stats.isDirectory() && !ignored.includes(items[index])) {
+            await clean(source.concat(items[index]));
         }
-    } catch (_1) {}
-
-    return false;
+        if (item_stats.isFile() && isCompiledFile(items[index], items)) {
+            await fs.promises.unlink(item_path);
+        }
+    }
 }
 
-clean([__dirname, "dist"], process.argv.slice(2));
+clean([__dirname]);
