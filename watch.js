@@ -5,8 +5,8 @@ const TARGET = __dirname;
 
 let queue = {};
 let events = {
-    "change .scss$": "npm run build-sass",
-    "change ^src.+.ts$": "npm run build-ts"
+    "change .scss$": "npm run build-scss",
+    "change .ts$": "npm run build-ts"
 };
 
 exec(`chdir /D ${__dirname} && npm run watch-start --if-present`, (error, stdout, stderr) => {
@@ -36,7 +36,9 @@ exec(`chdir /D ${__dirname} && npm run watch-start --if-present`, (error, stdout
                  */
                 if (pattern.split(" ")[0] !== event) return false;
                 if (!regex.test(file)) return false;
-                if (!Object.prototype.hasOwnProperty.call(queue, events[pattern])) queue[events[pattern]] = false;
+                if (!Object.prototype.hasOwnProperty.call(queue, events[pattern])) {
+                    queue[events[pattern]] = false;
+                }
                 if (queue[events[pattern]]) return false;
 
                 queue[events[pattern]] = true;
