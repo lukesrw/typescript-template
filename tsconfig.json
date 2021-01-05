@@ -4,8 +4,6 @@
         "target": "ESNext",
         "module": "commonjs",
         "sourceMap": true,
-        "outDir": "dist",
-        "rootDir": "src",
         "removeComments": true,
         "declaration": true,
         "declarationMap": true,
