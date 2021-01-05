@@ -1,8 +1,7 @@
 node_modules
 .github
 tsconfig.*
-/src
-/dist/clean*
-/dist/test
+*.ts
+*.scss
 *.tgz
 .eslintrc.json
