@@ -29,6 +29,9 @@ function isCompiledFile(file, files) {
  */
 async function clean(source = []) {
     let items = await fs.promises.readdir(path.join(...source));
+    items = items.filter(item => {
+        return !item.startsWith(".");
+    });
 
     if (typeof ignored === "undefined") {
         try {
