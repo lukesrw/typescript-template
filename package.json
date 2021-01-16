@@ -3,8 +3,8 @@
     "scripts": {
         "watch-end": "node clean style.css style.css.map",
         "build-ts": "tsc",
-        "build-sass": "sass ./public/css:./public/css",
-        "build-tailwind": "tailwindcss-cli build ./public/css/style.css -o ./public/css/style.css",
+        "build-sass": "sass ./css:./css",
+        "build-tailwind": "tailwindcss-cli build ./css/style.css -o ./css/style.css",
         "build": "npm install && npm run watch-end && npm ci & cross-env NODE_ENV=production && npm run build-ts && npm run build-sass && npm run build-tailwind",
         "watch-start": "npm run build && cross-env NODE_ENV=development && npm run build-tailwind",
         "watch-after-start": "node index",
